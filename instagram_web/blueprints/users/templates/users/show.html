@@ -1,0 +1,23 @@
+{% extends "_layout.html" %}
+
+{% block title %}
+  Profile Page
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<h1>Your Profile</h1>
+<a href="{{ url_for('home') }}">Home</a>
+<br><br>
+name: {{name}}
+<br><br>
+email: {{email}}
+<br><br>
+username: {{username}}
+<br><br>
+<a href="{{ url_for('users.edit', id=id) }}" class="btn btn-secondary">Edit Profile</a>
+
+
+ {% endblock %}

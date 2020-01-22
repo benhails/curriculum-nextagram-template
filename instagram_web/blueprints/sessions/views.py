@@ -38,4 +38,4 @@ def login_post():
 def login_destroy():
     logout_user()
     flash('You have been logged out', 'info')
-    return redirect(url_for('sessions.login_create'))
+    return redirect(url_for('home'))

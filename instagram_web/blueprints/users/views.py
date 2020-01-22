@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.user import User
-from flask_login import login_user
+from flask_login import login_user, current_user
 
 
 users_blueprint = Blueprint('users',
@@ -42,6 +42,18 @@ def create():
         return render_template('users/new.html', name=name, username=username, email=email, password=password)
     
 
+@users_blueprint.route('/<id>', methods=["GET"])
+def show(id):
+    if User.get_or_none(User.id==id):
+        user = User.get_by_id(id)
+        if user.id == current_user.id:
+            return render_template('users/show.html', name=user.name, username=user.username, email=user.email, id=user.id)
+        else:
+            return render_template('401.html')
+    else:
+        return render_template('401.html') # this could potentially be a page not found error as really it's because the id doesn't exist but why give away that the id does exist if we don't have to?
+    
+
 @users_blueprint.route('/', methods=["GET"])
 def index():
     return "USERS"
@@ -49,9 +61,17 @@ def index():
 
 @users_blueprint.route('/<id>/edit', methods=['GET'])
 def edit(id):
-    pass
+    if User.get_or_none(User.id==id):
+        user = User.get_by_id(id)
+        if user.id == current_user.id:
+            return render_template('users/edit.html', name=user.name, username=user.username, email=user.email)
+        else:
+            return render_template('401.html')
+    else:
+        return render_template('401.html')
 
 
 @users_blueprint.route('/<id>', methods=['POST'])
 def update(id):
+    
     pass

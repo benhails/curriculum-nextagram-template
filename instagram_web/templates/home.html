@@ -13,6 +13,10 @@
   <br><br>
   <a href="{{ url_for('sessions.login_create') }}">Login</a>
   <br><br>
+  {% if current_user.is_authenticated %}
+    <a href="{{ url_for('users.show', id=current_user.id) }}">My Profile</a>
+    <br><br>
+  {% endif %}
   <form method="POST" action="{{ url_for('sessions.login_destroy') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <div class="form-group">
