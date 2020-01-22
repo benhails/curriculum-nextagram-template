@@ -29,17 +29,21 @@ def create():
     username = request.form.get('username')
     email = request.form.get('email')
     password = request.form.get('password')
+    confirm_password = request.form.get('confirm_password')
     new_user = User(name=name, username=username, email=email, password=password)
-
-    if new_user.save():
-        user_for_auth = User.get_or_none(User.email==new_user.email)
-        login_user(user_for_auth)
-        flash("You've signed up Successfully and are now logged in!", 'success')
-        return redirect(url_for('users.new')) # (users.show) in the future - just using users.new for testing
+    if password == confirm_password:
+        if new_user.save():
+            user_for_auth = User.get_or_none(User.email==new_user.email)
+            login_user(user_for_auth)
+            flash("You've signed up Successfully and are now logged in!", 'success')
+            return redirect(url_for('users.show', id=user_for_auth.id)) # (users.show) in the future - just using users.new for testing
+        else:
+            for error in new_user.errors:
+                flash(error, 'danger')
     else:
-        for error in new_user.errors:
-            flash(error, 'danger')
-        return render_template('users/new.html', name=name, username=username, email=email, password=password)
+        flash("Passwords don't match", 'danger')
+
+    return render_template('users/new.html', name=name, username=username, email=email, password=password, confirm_password=confirm_password)
     
 
 @users_blueprint.route('/<id>', methods=["GET"])
@@ -64,7 +68,7 @@ def edit(id):
     if User.get_or_none(User.id==id):
         user = User.get_by_id(id)
         if user.id == current_user.id:
-            return render_template('users/edit.html', name=user.name, username=user.username, email=user.email)
+            return render_template('users/edit.html', name=user.name, username=user.username, email=user.email, id=user.id)
         else:
             return render_template('401.html')
     else:
@@ -73,5 +77,35 @@ def edit(id):
 
 @users_blueprint.route('/<id>', methods=['POST'])
 def update(id):
+    c = User.get_by_id(id)
+
+    u_name = request.form.get('name')
+    u_email = request.form.get('email')
+    u_username = request.form.get('username')
+    u_password = request.form.get('password')
+    u_confirm_password = request.form.get('confirm_password')
+
+    user_dict = {}
     
-    pass
+    user_dict['name'] = u_name
+    if u_email != c.email:
+        user_dict['email'] = u_email
+    if u_username != c.username:
+        user_dict['username'] = u_username
+    if u_password:
+        user_dict['password'] = u_password 
+
+    updated_user = User(id=id, **user_dict)
+    if u_password == u_confirm_password and u_username and u_email:
+        if updated_user.save():
+            flash("Your details have been successfully updated!", 'success')
+            return redirect(url_for('users.edit', id=id))
+        else:
+            for error in updated_user.errors:
+                flash(error, 'danger')
+    else:
+        flash("Passwords don't match or required information is missing", 'danger')
+
+    return render_template('users/edit.html', id=id, name=u_name, username=u_username, email=u_email, password=u_password, confirm_password=u_confirm_password)
+    
+    # return redirect(url_for('users.edit', id=id))
