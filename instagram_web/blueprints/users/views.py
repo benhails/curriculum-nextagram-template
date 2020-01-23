@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.user import User
 from flask_login import login_user, current_user
-
+from helpers import s3 
+from config import S3_BUCKET, S3_LOCATION
 
 users_blueprint = Blueprint('users',
                             __name__,
@@ -51,7 +52,8 @@ def show(id):
     if User.get_or_none(User.id==id):
         user = User.get_by_id(id)
         if user.id == current_user.id:
-            return render_template('users/show.html', name=user.name, username=user.username, email=user.email, id=user.id)
+            image = S3_LOCATION + user.image if user.image else '/static/images/profile-avatar.png'
+            return render_template('users/show.html', name=user.name, username=user.username, email=user.email, id=user.id, image=image)
         else:
             return render_template('401.html')
     else:
@@ -101,7 +103,7 @@ def update(id):
             flash("Your details have been successfully updated!", 'success')
             return redirect(url_for('users.edit', id=id))
         else:
-            for error in updated_user.errors:
+            for error in updated_user.errors: # can change to "<br>.join(updated_user.errors)" or thereabouts rather than using the for loop
                 flash(error, 'danger')
     else:
         flash("Passwords don't match or required information is missing", 'danger')
@@ -121,6 +123,32 @@ def profile_images_new(id):
         return render_template('401.html')
 
 
+def upload_file_to_s3(file, id, acl="public-read"):
+    
+    try:
+        s3.upload_fileobj(
+            file,
+            S3_BUCKET,
+            file.filename,
+            ExtraArgs={
+                "ACL": acl,
+                "ContentType": file.content_type
+            }
+        )
+        User.update(image=file.filename).where(User.id == id).execute()
+        flash('Image successfully uploaded', 'success')
+
+    except Exception as e:
+        # This is a catch all exception, edit this part to fit your needs.
+        flash("Something Happened: ", e)
+        return e
+
+
 @users_blueprint.route('<id>/profile-images/', methods=["POST"])
 def profile_images_create(id):
-    return redirect(url_for('users.show', id=id))
+    file = request.files['file']
+    e = upload_file_to_s3(file, id)
+    if e:
+        return redirect(url_for('users.profile_images_new', id=id))
+    else:
+        return redirect(url_for('users.show', id=id))
