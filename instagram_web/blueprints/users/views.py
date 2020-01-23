@@ -108,4 +108,19 @@ def update(id):
 
     return render_template('users/edit.html', id=id, name=u_name, username=u_username, email=u_email, password=u_password, confirm_password=u_confirm_password)
     
-    # return redirect(url_for('users.edit', id=id))
+   
+@users_blueprint.route('<id>/profile-images/add', methods=["GET"])
+def profile_images_new(id):
+    if User.get_or_none(User.id==id):
+        user = User.get_by_id(id)
+        if user.id == current_user.id:
+            return render_template('users/add_image.html', id=id)
+        else:
+            return render_template('401.html')
+    else:
+        return render_template('401.html')
+
+
+@users_blueprint.route('<id>/profile-images/', methods=["POST"])
+def profile_images_create(id):
+    return redirect(url_for('users.show', id=id))

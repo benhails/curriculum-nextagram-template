@@ -13,6 +13,7 @@ assets.register(bundles)
 app.register_blueprint(users_blueprint, url_prefix="/users")
 app.register_blueprint(sessions_blueprint)
 
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 

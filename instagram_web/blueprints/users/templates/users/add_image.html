@@ -1,0 +1,22 @@
+{% extends "_layout.html" %}
+
+{% block title %}
+  Profile Photo
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+  <h1>Profile Photo</h1>
+  <a href="{{ url_for('home') }}">Home</a>
+  <br><br>
+  <title>Upload new File</title>
+    <form method="POST" enctype=multipart/form-data action="{{ url_for('users.profile_images_create', id=id) }}" >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    <!-- <button type="submit" class="btn btn-primary">Log in</button> -->
+
+{% endblock %}
