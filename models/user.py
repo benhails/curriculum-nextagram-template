@@ -6,10 +6,11 @@ from flask_login import UserMixin
 
 
 class User(BaseModel, UserMixin):
-    name = pw.CharField(unique=False, null=False, default='')
+    name = pw.CharField(unique=False, null=True, default='')
     username = pw.CharField(unique=True)
     email = pw.CharField(unique=True)
     password = pw.CharField(unique=False)
+    image = pw.CharField(unique=False, null=True, default='')
 
     def validate(self):
         upper = False

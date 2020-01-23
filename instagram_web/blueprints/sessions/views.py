@@ -10,12 +10,12 @@ sessions_blueprint = Blueprint('sessions',
 
 
 @sessions_blueprint.route('/login', methods=["GET"])
-def login_create():
+def login_new():
     return render_template('sessions/login.html')
 
 
 @sessions_blueprint.route('/', methods=["POST"])
-def login_post():
+def login_create(): # should really be login_create
     user_for_auth = User.get_or_none(User.email==request.form.get('email')) # captures User.id of the username if it exists
     if user_for_auth:
         password_to_check = request.form['password']
