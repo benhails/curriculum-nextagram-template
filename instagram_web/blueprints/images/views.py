@@ -5,7 +5,9 @@ from flask_login import login_user, current_user
 from helpers import s3 
 from config import S3_BUCKET, S3_LOCATION
 
-users_blueprint = Blueprint('users',
+# NEED TO CONTINUE FROM HERE
+
+users_blueprint = Blueprint('images',
                             __name__,
                             template_folder='templates')
 
@@ -51,20 +53,18 @@ def create():
 def show(id):
     if User.get_or_none(User.id==id):
         user = User.get_by_id(id)
-        avatar = '/static/images/profile-avatar.png' if user.id == current_user.id else '/static/images/profile-avatar-public.png'
-        image = S3_LOCATION + user.image if user.image else avatar
-        return render_template('users/show.html', name=user.name, username=user.username, email=user.email, id=user.id, image=image)
+        if user.id == current_user.id:
+            image = S3_LOCATION + user.image if user.image else '/static/images/profile-avatar.png'
+            return render_template('users/show.html', name=user.name, username=user.username, email=user.email, id=user.id, image=image)
+        else:
+            return render_template('401.html')
     else:
         return render_template('401.html') # this could potentially be a page not found error as really it's because the id doesn't exist but why give away that the id does exist if we don't have to?
     
 
 @users_blueprint.route('/', methods=["GET"])
 def index():
-    # this will be my user index page; perhaps add a search
-    user_list = list(User.select())
-    for user in user_list:
-        user.image = S3_LOCATION + user.image if user.image else '/static/images/profile-avatar-public.png'
-    return render_template('users/index.html', user_list=user_list)
+    return "USERS"
 
 
 @users_blueprint.route('/<id>/edit', methods=['GET'])
