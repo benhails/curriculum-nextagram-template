@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.user import User
+from models.images import Image
+from instagram_web.util.helper import upload_file_to_s3
 from flask_login import login_user, current_user
-from helpers import s3 
-from config import S3_BUCKET, S3_LOCATION
+from helpers import s3
+from config import S3_BUCKET, S3_LOCATION, S3_PROFILE_IMAGES_FOLDER # only here temp
 
 users_blueprint = Blueprint('users',
                             __name__,
@@ -45,32 +47,27 @@ def create():
         flash("Passwords don't match", 'danger')
 
     return render_template('users/new.html', name=name, username=username, email=email, password=password, confirm_password=confirm_password)
-    
+
 
 @users_blueprint.route('/<id>', methods=["GET"])
 def show(id):
-    if User.get_or_none(User.id==id):
-        user = User.get_by_id(id)
-        avatar = '/static/images/profile-avatar.png' if user.id == current_user.id else '/static/images/profile-avatar-public.png'
-        image = S3_LOCATION + user.image if user.image else avatar
-        return render_template('users/show.html', name=user.name, username=user.username, email=user.email, id=user.id, image=image)
+    user = User.get_or_none(User.id==id)
+    if user:
+        return render_template('users/show.html', user=user)
     else:
-        return render_template('401.html') # this could potentially be a page not found error as really it's because the id doesn't exist but why give away that the id does exist if we don't have to?
+        return render_template('404.html')
     
 
 @users_blueprint.route('/', methods=["GET"])
 def index():
-    # this will be my user index page; perhaps add a search
-    user_list = list(User.select())
-    for user in user_list:
-        user.image = S3_LOCATION + user.image if user.image else '/static/images/profile-avatar-public.png'
+    user_list = User.select()
     return render_template('users/index.html', user_list=user_list)
 
 
 @users_blueprint.route('/<id>/edit', methods=['GET'])
 def edit(id):
-    if User.get_or_none(User.id==id):
-        user = User.get_by_id(id)
+    user = User.get_or_none(User.id==id)
+    if user:
         if user.id == current_user.id:
             return render_template('users/edit.html', name=user.name, username=user.username, email=user.email, id=user.id)
         else:
@@ -92,6 +89,7 @@ def update(id):
     user_dict = {}
     
     user_dict['name'] = u_name
+    user_dict['image'] = c.image
     if u_email != c.email:
         user_dict['email'] = u_email
     if u_username != c.username:
@@ -115,8 +113,8 @@ def update(id):
    
 @users_blueprint.route('<id>/profile-images/add', methods=["GET"])
 def profile_images_new(id):
-    if User.get_or_none(User.id==id):
-        user = User.get_by_id(id)
+    user = User.get_or_none(User.id==id)
+    if user:
         if user.id == current_user.id:
             return render_template('users/add_image.html', id=id)
         else:
@@ -125,32 +123,16 @@ def profile_images_new(id):
         return render_template('401.html')
 
 
-def upload_file_to_s3(file, id, acl="public-read"):
-    
-    try:
-        s3.upload_fileobj(
-            file,
-            S3_BUCKET,
-            file.filename,
-            ExtraArgs={
-                "ACL": acl,
-                "ContentType": file.content_type
-            }
-        )
-        User.update(image=file.filename).where(User.id == id).execute()
-        flash('Image successfully uploaded', 'success')
-
-    except Exception as e:
-        # This is a catch all exception, edit this part to fit your needs.
-        flash("Something Happened: ", e)
-        return e
-
-
 @users_blueprint.route('<id>/profile-images/', methods=["POST"])
 def profile_images_create(id):
-    file = request.files['file']
-    e = upload_file_to_s3(file, id)
-    if e:
+    try:
+        file = request.files['file']
+        e = upload_file_to_s3(file=file, id=id, folder=S3_PROFILE_IMAGES_FOLDER)
+        if e:
+            return redirect(url_for('users.profile_images_new', id=id))
+        else:
+            User.update(image=file.filename).where(User.id == id).execute()
+            return redirect(url_for('users.show', id=id))
+    except: 
+        flash("Please add a file!", 'danger')
         return redirect(url_for('users.profile_images_new', id=id))
-    else:
-        return redirect(url_for('users.show', id=id))

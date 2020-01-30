@@ -8,23 +8,29 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{name}}</h1>
-<a href="{{ url_for('home') }}">Home</a>
-<br><br>
-{% if id == current_user.id %}
-  <a href="{{ url_for('users.profile_images_new', id=id) }}"><img alt= "profile-avatar" src="{{image}}" width=25% height=25%></a>
+  <h1>{{user.name}}</h1>
+  <a href="{{ url_for('home') }}">Home</a>
   <br><br>
-{% else %}
-  <img alt= "profile-avatar" src="{{image}}" width=25% height=25%>
+  {% if user.id == current_user.id %}
+    <a href="{{ url_for('users.profile_images_new', id=user.id) }}"><img alt= "profile-avatar" src="{{user.full_url}}" width=25% height=25%></a>
+    <br><br>
+  {% else %}
+    <img alt= "profile-avatar" src="{{user.full_url}}" width=25% height=25%>
+    <br><br>
+  {% endif %}
+  email: {{user.email}}
   <br><br>
-{% endif %}
-
-email: {{email}}
-<br><br>
-username: {{username}}
-<br><br>
-{% if id == current_user.id %}
-  <a href="{{ url_for('users.edit', id=id) }}" class="btn btn-secondary">Edit Profile</a>
-{% endif %}
+  username: {{user.username}}
+  <br><br>
+  {% if user.id == current_user.id %}
+    <a href="{{ url_for('users.edit', id=user.id) }}" class="btn btn-secondary">Edit Profile</a>
+    <br><br>
+  {% endif %}
+  
+  {% for image in user.images %}
+    <img alt= "shared-image" src="{{image.full_url}}" width=25% height=25%>
+    Blurb: {{image.blurb}}
+    <br><br>
+  {% endfor %}
 
  {% endblock %}

@@ -1,9 +1,14 @@
 from models.base_model import BaseModel
+from flask import flash
 import peewee as pw
 import re
 from werkzeug.security import generate_password_hash
-from flask_login import UserMixin 
+from flask_login import UserMixin, current_user
+from helpers import s3
+from config import S3_BUCKET, S3_LOCATION, S3_PROFILE_IMAGES_FOLDER
+from playhouse.hybrid import hybrid_property
 
+PROFILE_AVATAR_PUBLIC = '/static/images/profile-avatar-public.png'
 
 class User(BaseModel, UserMixin):
     name = pw.CharField(unique=False, null=True, default='')
@@ -11,6 +16,16 @@ class User(BaseModel, UserMixin):
     email = pw.CharField(unique=True)
     password = pw.CharField(unique=False)
     image = pw.CharField(unique=False, null=True, default='')
+
+    @hybrid_property
+    def full_url(self):
+        self.image = S3_LOCATION + S3_PROFILE_IMAGES_FOLDER + self.image if self.image else PROFILE_AVATAR_PUBLIC
+        return self.image
+
+    # THE BELOW FUNCTION MAY BE NEEDED IF I DIDN'T HAVE A BACK REF
+    # def get_user_images(self):
+    #     from models.images import Image
+    #     return Image.select().where(Image.user_id == self.id)
 
     def validate(self):
         upper = False
