@@ -1,0 +1,26 @@
+{% extends "_layout.html" %}
+
+{% block title %}
+  Share Photos
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+  <h1>Share Photos</h1>
+  <a href="{{ url_for('home') }}">Home</a>
+  <br><br>
+  <title>Upload new File</title>
+    <form method="POST" enctype=multipart/form-data action="{{ url_for('images.create') }}" >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <input type=file name=file>
+      <br><br>
+      <div class="form-group">
+        <label for="blurb">Say something about this image:</label>
+        <input type="text" name="blurb" class="form-control" value="{{blurb}}" />
+      </div>
+      <input type=submit value=Upload>
+    </form>
+
+{% endblock %}

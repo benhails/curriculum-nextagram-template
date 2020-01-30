@@ -1,0 +1,33 @@
+{% extends "_layout.html" %}
+
+{% block title %}
+  Users
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<h1>Users</h1>
+<a href="{{ url_for('home') }}">Home</a>
+<br><br>
+
+{% for user in user_list %}
+  <hr>
+  <img alt= "profile-avatar" src="{{user.full_url}}" width=25% height=25%>
+  <br><br>
+  name: <a href="{{ url_for('users.show', id=user.id) }}">{{user.name}}</a>
+  <br><br>
+  email: {{user.email}}
+  <br><br>
+  username: {{user.username}}
+  <br><br>
+  {% for image in user.images %}
+    <img alt= "shared-image" src="{{image.full_url}}" width=25% height=25%>
+    Blurb: {{image.blurb}}
+    <br><br>
+  {% endfor %}
+{% endfor %}
+
+
+ {% endblock %}
