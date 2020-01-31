@@ -4,7 +4,7 @@ from models.images import Image
 from models.user import User
 from flask_login import login_user, current_user
 from app import gateway
-from instagram_web.util.helper import send_email
+from instagram_web.util.helpers import send_email
 
 
 donations_blueprint = Blueprint('donations',

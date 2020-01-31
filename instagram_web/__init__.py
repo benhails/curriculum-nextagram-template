@@ -1,4 +1,5 @@
 from app import app
+import os
 from flask import render_template
 from instagram_web.blueprints.users.views import users_blueprint
 from instagram_web.blueprints.images.views import images_blueprint
@@ -8,9 +9,12 @@ from flask_assets import Environment, Bundle
 from .util.assets import bundles
 from flask_login import LoginManager, login_required
 from models.user import User
+from instagram_web.util.helpers import oauth
 
 assets = Environment(app)
 assets.register(bundles)
+
+oauth.init_app(app)
 
 app.register_blueprint(users_blueprint, url_prefix="/users")
 app.register_blueprint(images_blueprint, url_prefix="/images")
