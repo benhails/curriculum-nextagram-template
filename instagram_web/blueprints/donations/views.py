@@ -1,8 +1,10 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from models.donations import Donation
 from models.images import Image
+from models.user import User
 from flask_login import login_user, current_user
 from app import gateway
+from instagram_web.util.helper import send_email
 
 
 donations_blueprint = Blueprint('donations',
@@ -34,6 +36,9 @@ def create(image_id):
     if result.is_success:
         donation = Donation(currency="USD", amount=amount, image=image_id, user=user, trans_id=result.transaction.id)
         donation.save()
+        user = User.get_by_id(user)
+        image = Image.get_by_id(image_id)
+        send_email(user, amount, image)
         flash('Your donation has been received. Thank you!', 'success')
     else:
         flash('Something went wrong, please try again!', 'danger')
