@@ -7,6 +7,10 @@ S3_LOCATION = 'http://{}.s3.amazonaws.com/'.format(S3_BUCKET)
 S3_PROFILE_IMAGES_FOLDER = 'profile_images/'
 S3_IMAGES_FOLDER = 'images/'
 
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+
+
 class Config(object):
     DEBUG = False
     TESTING = False
@@ -30,6 +34,7 @@ class DevelopmentConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
     ASSETS_DEBUG = False
+    
 
 class TestingConfig(Config):
     TESTING = True

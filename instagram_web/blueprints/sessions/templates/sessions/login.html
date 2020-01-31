@@ -21,6 +21,8 @@
       <label for="password">Password:</label>
       <input type="password" name="password" class="form-control" value="{{password}}"/>
     </div>
+    <a href="{{ url_for('sessions.google_login') }}">Login with Google</a>
+    <br><br>
     <button type="submit" class="btn btn-primary">Log in</button>
   </form>
 {% endblock %}
