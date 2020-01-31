@@ -1,0 +1,46 @@
+{% extends "_layout.html" %}
+
+{% block title %}
+  Donate
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+  <h1>Donate</h1>
+  <a href="{{ url_for('home') }}">Home</a>
+  <br><br>
+  <img alt= "shared-image" src="{{image.full_url}}" width=25% height=25%>
+  
+  <br><br>
+  <form method="POST" action="{{ url_for('donations.create', image_id=image.id, user_id=current_user.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+  <input id="payment_method_nonce" type="hidden" name="payment_method_nonce" value=""/>
+  <div id="dropin-container"></div>
+  <button id="submit-button">Check payment method</button>
+  <script>
+    var button = document.querySelector('#submit-button');
+
+    braintree.dropin.create({
+      authorization: '{{ token }}',
+      container: '#dropin-container'
+    }, function (createErr, instance) {
+      button.addEventListener('click', function (e) {
+        e.preventDefault()
+        instance.requestPaymentMethod(function (err, payload) {
+          document.getElementById('payment_method_nonce').value = payload.nonce
+          document.getElementById('submit-button').style = "display: none"
+          document.getElementById('donate-button').disabled = false
+        });
+      });
+    });
+  </script>
+    <div class="form-group">
+      <label for="name">Amount:</label>
+      <input type="text" name="amount" class="form-control" value="{{amount}}" />
+    </div>
+    <button id="donate-button" type="submit" class="btn btn-primary" disabled="True">Donate</button>
+  </form>
+
+{% endblock %}
