@@ -25,6 +25,8 @@
   {% for image in user.images %}
     <img alt= "shared-image" src="{{image.full_url}}" width=25% height=25%>
     Blurb: {{image.blurb}}
+    <a href="{{ url_for('donations.new', image_id=image.id, user_id=user.id) }}" class="btn btn-secondary">Donate</a>
+    <br><br>
     <br><br>
   {% endfor %}
 {% endfor %}
