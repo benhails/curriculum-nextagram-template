@@ -18,8 +18,11 @@ def create():
     f['idol_id'] = request.args.get('idol_id')
     f['status'] = 'approved'
     follow = Follow(**f)
-    follow.save()
-    flash("You're now following this user", 'success')
+    if follow.save():
+        flash("You're now following this user", 'success')
+    else: 
+        for error in follow.errors:
+            flash(error, 'danger')
     return redirect(url_for('users.show', id=f.get('idol_id')))
     
 

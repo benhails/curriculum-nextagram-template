@@ -22,7 +22,9 @@
   <br><br>
   username: {{user.username}}
   <br><br>
-  <!-- need to change the following later so that if a user is already being followed the button changes to unfollow. Suggest a hybrid property maybe! -->
+  
+  <!-- within the if statement below the value of the button and action need to be got -->
+  
   {% if user.id != current_user.id %}
   <form method="POST" action="{{ url_for('follows.create', idol_id = user.id) }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
