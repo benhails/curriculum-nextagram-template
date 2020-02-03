@@ -1,6 +1,6 @@
 from models.base_model import BaseModel
 from models.user import User
-from models.images import Image
+from models.image import Image
 import peewee as pw
 from money.money import Money
 from money.currency import Currency

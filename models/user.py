@@ -24,7 +24,7 @@ class User(BaseModel, UserMixin):
 
     # THE BELOW FUNCTION MAY BE NEEDED IF I DIDN'T HAVE A BACK REF
     # def get_user_images(self):
-    #     from models.images import Image
+    #     from models.image import Image
     #     return Image.select().where(Image.user_id == self.id)
 
     def validate(self):

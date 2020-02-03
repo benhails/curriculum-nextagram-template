@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from models.images import Image
+from models.image import Image
+from models.user import User
 from flask_login import login_user, current_user
 from helpers import s3 
 from config import S3_BUCKET, S3_LOCATION, S3_IMAGES_FOLDER
@@ -37,9 +38,12 @@ def show(id):
     pass
     
 
-@images_blueprint.route('/', methods=["GET"])
+# use this to show my-feed.
+@images_blueprint.route('/my-feed', methods=["GET"])
 def index():
-    pass
+    # get all users I follow so I can then extract the images and display them on screen; if I can't do it cleanly in the HTML then process the data further in the model first
+    feed = User.get_by_id(current_user.id).where(User.idols.status == 'approved').order_by(User.idols.images.created_at.desc())
+    return render_template('images/my-feed.html', feed=feed)
 
 
 @images_blueprint.route('/<id>/edit', methods=['GET'])

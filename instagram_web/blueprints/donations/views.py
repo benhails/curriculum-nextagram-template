@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from models.donations import Donation
-from models.images import Image
+from models.donation import Donation
+from models.image import Image
 from models.user import User
 from flask_login import login_user, current_user
 from app import gateway
