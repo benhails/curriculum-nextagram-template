@@ -1,12 +1,12 @@
 from helpers import s3
 from config import S3_BUCKET, S3_LOCATION, S3_PROFILE_IMAGES_FOLDER, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 from models.user import User
-from models.images import Image
+from models.image import Image
 from flask import Flask, flash
 import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-from authlib.flask.client import OAuth
+from authlib.integrations.flask_client import OAuth
 
 
 '''

@@ -1,0 +1,11 @@
+{% macro user_images(image, user, current_user) %}
+    <img alt= "shared-image" src="{{image.full_url}}" width=25% height=25%>
+    Blurb: {{image.blurb}}
+    <br><br>
+    {% if image.user_id != current_user.id %}
+        <a href="{{ url_for('donations.new', image_id=image.id, user_id=user.id) }}" class="btn btn-secondary">Donate</a>
+        <br><br>
+        <br><br>
+    {% endif %}
+{% endmacro %}
+

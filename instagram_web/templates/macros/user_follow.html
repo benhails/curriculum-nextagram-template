@@ -1,0 +1,17 @@
+{% macro user_follow(user, current_user) %}
+    {% if user.id != current_user.id %}
+        {% if user in current_user.get_idols %}
+        <form method="POST" action="{{ url_for('follows.delete', idol_id = user.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="submit" class="btn btn-secondary">Unfollow</button>
+            <br><br>
+        </form>
+        {% else %}
+        <form method="POST" action="{{ url_for('follows.create', idol_id = user.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="submit" class="btn btn-secondary">Follow</button>
+            <br><br>
+        </form>
+        {% endif %}
+  {% endif %}
+{% endmacro %}

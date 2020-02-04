@@ -1,0 +1,15 @@
+{% macro user_block(user, current_user) %}
+    {% if user.id == current_user.id %}
+    <a href="{{ url_for('users.profile_images_new', id=user.id) }}"><img alt= "profile-avatar" src="{{user.full_url}}" width=25% height=25%></a>
+    <br><br>
+    {% else %}
+    <img alt= "profile-avatar" src="{{user.full_url}}" width=25% height=25%>
+    <br><br>
+    {% endif %}
+    name: <a href="{{ url_for('users.show', id=user.id) }}">{{user.name}}</a>
+    <br><br>
+    email: {{user.email}}
+    <br><br>
+    username: {{user.username}}
+    <br><br>
+{% endmacro %}

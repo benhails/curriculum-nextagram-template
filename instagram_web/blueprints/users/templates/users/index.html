@@ -1,4 +1,6 @@
 {% extends "_layout.html" %}
+{% from 'macros/user_block.html' import user_block %}
+{% from 'macros/user_images.html' import user_images %}
 
 {% block title %}
   Users
@@ -8,28 +10,16 @@
 {% endblock %}
 
 {% block content %}
-<h1>Users</h1>
-<a href="{{ url_for('home') }}">Home</a>
-<br><br>
+  <h1>Users</h1>
+  <a href="{{ url_for('home') }}">Home</a>
+  <br><br>
 
-{% for user in user_list %}
-  <hr>
-  <img alt= "profile-avatar" src="{{user.full_url}}" width=25% height=25%>
-  <br><br>
-  name: <a href="{{ url_for('users.show', id=user.id) }}">{{user.name}}</a>
-  <br><br>
-  email: {{user.email}}
-  <br><br>
-  username: {{user.username}}
-  <br><br>
-  {% for image in user.images %}
-    <img alt= "shared-image" src="{{image.full_url}}" width=25% height=25%>
-    Blurb: {{image.blurb}}
-    <a href="{{ url_for('donations.new', image_id=image.id, user_id=user.id) }}" class="btn btn-secondary">Donate</a>
-    <br><br>
-    <br><br>
+  {% for user in user_list %}
+    <hr>
+    {{ user_block(user, current_user) }}
+    {% for image in user.images %}
+      {{ user_images(image, user, current_user) }}
+    {% endfor %}
   {% endfor %}
-{% endfor %}
 
-
- {% endblock %}
+{% endblock %}

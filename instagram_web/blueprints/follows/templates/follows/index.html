@@ -1,0 +1,36 @@
+{% extends "_layout.html" %}
+{% from 'macros/user_block.html' import user_block %}
+
+{% block title %}
+  Fans & Idols
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+  <h1>Fans & Idols</h1>
+  <a href="{{ url_for('home') }}">Home</a>
+  <br><br>
+
+  {% set idols = current_user.get_idols %}
+    <h2>Your Idols</h2>
+    {% if idols %}
+      {% for user in idols %}
+        {{ user_block(user, current_user) }}
+      {% endfor %}
+    {% else %}
+    <h4>You don't have any idols yet! Go and follow someone.</h4>
+  {% endif %}
+
+  {% set fans = current_user.get_fans %}
+    <h2>Your Fans</h2>
+    {% if fans %}
+      {% for user in fans %}
+        {{ user_block(user, current_user) }}
+      {% endfor %}
+    {% else %}
+    <h4>You don't have any fans! Try posting some better pictures!</h4>
+    {% endif %}
+
+ {% endblock %}

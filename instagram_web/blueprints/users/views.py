@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.user import User
-from models.images import Image
+from models.image import Image
+from models.follow import Follow
 from instagram_web.util.helpers import upload_file_to_s3
-from flask_login import login_user, current_user
+from flask_login import login_user, current_user, login_required
 from helpers import s3
 from config import S3_BUCKET, S3_LOCATION, S3_PROFILE_IMAGES_FOLDER # only here temp
 
@@ -50,6 +51,7 @@ def create():
 
 
 @users_blueprint.route('/<id>', methods=["GET"])
+@login_required
 def show(id):
     user = User.get_or_none(User.id==id)
     if user:
@@ -59,12 +61,14 @@ def show(id):
     
 
 @users_blueprint.route('/', methods=["GET"])
+@login_required
 def index():
     user_list = User.select()
     return render_template('users/index.html', user_list=user_list)
 
 
 @users_blueprint.route('/<id>/edit', methods=['GET'])
+@login_required
 def edit(id):
     user = User.get_or_none(User.id==id)
     if user:
@@ -77,6 +81,7 @@ def edit(id):
 
 
 @users_blueprint.route('/<id>', methods=['POST'])
+@login_required
 def update(id):
     c = User.get_by_id(id)
 
@@ -112,6 +117,7 @@ def update(id):
     
    
 @users_blueprint.route('<id>/profile-images/add', methods=["GET"])
+@login_required
 def profile_images_new(id):
     user = User.get_or_none(User.id==id)
     if user:
@@ -124,6 +130,7 @@ def profile_images_new(id):
 
 
 @users_blueprint.route('<id>/profile-images/', methods=["POST"])
+@login_required
 def profile_images_create(id):
     try:
         file = request.files['file']
