@@ -30,7 +30,7 @@ class User(BaseModel, UserMixin):
     
     @hybrid_property
     def get_idols(self):
-        return (follow.idol for follow in self.idols)
+        return [follow.idol for follow in self.idols]
         # THE LINE ABOVE PROVIDES THE SAME OUTPUT AS THE CODE BELOW
         # SYNTAX: what to put in the tuple for iterated_item_name in iterable list/object
         # idol_list = []
@@ -41,7 +41,7 @@ class User(BaseModel, UserMixin):
 
     @hybrid_property
     def get_fans(self):
-        # return (follow.fan for follow in self.fans)
+        # return [follow.fan for follow in self.fans]
         fan_list = []
         for follow in self.fans:
             fan_list.append(follow.fan)
