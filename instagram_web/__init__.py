@@ -47,7 +47,6 @@ def page_not_found_error(e):
 
 
 @app.route("/")
-@login_required
 def home():
     return render_template('home.html')
 

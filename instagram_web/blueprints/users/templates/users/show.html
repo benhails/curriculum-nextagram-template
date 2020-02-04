@@ -1,4 +1,7 @@
 {% extends "_layout.html" %}
+{% from 'macros/user_block.html' import user_block %}
+{% from 'macros/user_follow.html' import user_follow %}
+{% from 'macros/user_images.html' import user_images %}
 
 {% block title %}
   Profile Page
@@ -11,37 +14,18 @@
   <h1>{{user.name}}</h1>
   <a href="{{ url_for('home') }}">Home</a>
   <br><br>
-  {% if user.id == current_user.id %}
-    <a href="{{ url_for('users.profile_images_new', id=user.id) }}"><img alt= "profile-avatar" src="{{user.full_url}}" width=25% height=25%></a>
-    <br><br>
-  {% else %}
-    <img alt= "profile-avatar" src="{{user.full_url}}" width=25% height=25%>
-    <br><br>
-  {% endif %}
-  email: {{user.email}}
-  <br><br>
-  username: {{user.username}}
-  <br><br>
-  
-  <!-- within the if statement below the value of the button and action need to be got -->
-  
-  {% if user.id != current_user.id %}
-  <form method="POST" action="{{ url_for('follows.create', idol_id = user.id) }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-    <button type="submit" class="btn btn-secondary">Follow</button>
-    <br><br>
-  </form>
+  {{ user_block(user, current_user) }}
+  {{ user_follow(user, current_user) }}
 
-  {% endif %}
   {% if user.id == current_user.id %}
     <a href="{{ url_for('users.edit', id=user.id) }}" class="btn btn-secondary">Edit Profile</a>
+    <br><br>
+    <a href="{{ url_for('follows.index') }}" class="btn btn-secondary">View my followers</a>
     <br><br>
   {% endif %}
   
   {% for image in user.images %}
-    <img alt= "shared-image" src="{{image.full_url}}" width=25% height=25%>
-    Blurb: {{image.blurb}}
-    <br><br>
+   {{ user_images(image, user, current_user) }}
   {% endfor %}
 
- {% endblock %}
+{% endblock %}

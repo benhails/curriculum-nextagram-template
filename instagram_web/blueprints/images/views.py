@@ -42,6 +42,7 @@ def show(id):
 @images_blueprint.route('/my-feed', methods=["GET"])
 def index():
     # get all users I follow so I can then extract the images and display them on screen; if I can't do it cleanly in the HTML then process the data further in the model first
+    # fan_list = User.get_or_none(User.id == current_user.id).images
     feed = User.get_by_id(current_user.id).where(User.idols.status == 'approved').order_by(User.idols.images.created_at.desc())
     return render_template('images/my-feed.html', feed=feed)
 

@@ -13,40 +13,38 @@ follows_blueprint = Blueprint('follows',
 # create a follow record
 @follows_blueprint.route('/', methods=['POST'])
 def create():
+    idol_id = request.args.get('idol_id')
     f = {}
     f['fan_id'] = current_user.id
-    f['idol_id'] = request.args.get('idol_id')
-    f['status'] = 'approved'
+    f['idol_id'] = idol_id
+    # status currently using default as defined in model
     follow = Follow(**f)
     if follow.save():
         flash("You're now following this user", 'success')
     else: 
         for error in follow.errors:
             flash(error, 'danger')
-    return redirect(url_for('users.show', id=f.get('idol_id')))
+    return redirect(url_for('users.show', id=idol_id))
     
 
 # show all users that I follow and all users that follow me
 @follows_blueprint.route('/', methods=["GET"])
 def index():
-    fan_list = User.get_or_none(User.id == current_user.id).images
-    # need to make this work for fans and idols if the same is blank/not present
-    breakpoint()
-    # idol_list = User.get_by_id(current_user.id).idols
-    # may need to further process the above results to get exactly what I need for displaying on the page
-    # return render_template('follows/index.html', fan_list=fan_list, idol_list=idol_list)
     return render_template('follows/index.html')
 
+
 # update the status of a follow based on rejection/approval
-@follows_blueprint.route('/<follow_id>/update', methods=['POST'])
-def update(id):
+@follows_blueprint.route('/<idol_id>/update', methods=['POST'])
+def update(idol_id):
     pass
 
 
 # destroy a follow record
-@follows_blueprint.route('/<follow_id>/unfollow', methods=['POST'])
-def delete(id):
-    pass
+@follows_blueprint.route('/<idol_id>/unfollow', methods=['POST'])
+def delete(idol_id):
+    Follow.get_or_none((Follow.idol_id == idol_id) & (Follow.fan_id == current_user.id)).delete_instance()
+    flash("You're no longer following this user!", 'success')
+    return redirect(url_for('users.show', id=idol_id))
     
 
 # @follows_blueprint.route('/<id>/follow/new', methods=['GET'])

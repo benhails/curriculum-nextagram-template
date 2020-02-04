@@ -27,6 +27,27 @@ class User(BaseModel, UserMixin):
     #     from models.image import Image
     #     return Image.select().where(Image.user_id == self.id)
 
+    
+    @hybrid_property
+    def get_idols(self):
+        return (follow.idol for follow in self.idols)
+        # THE LINE ABOVE PROVIDES THE SAME OUTPUT AS THE CODE BELOW
+        # SYNTAX: what to put in the tuple for iterated_item_name in iterable list/object
+        # idol_list = []
+        # for follow in self.idols:
+        #     idol_list.append(follow.idol)
+        # return idol_list
+
+
+    @hybrid_property
+    def get_fans(self):
+        # return (follow.fan for follow in self.fans)
+        fan_list = []
+        for follow in self.fans:
+            fan_list.append(follow.fan)
+        return fan_list
+
+
     def validate(self):
         upper = False
         lower = False
