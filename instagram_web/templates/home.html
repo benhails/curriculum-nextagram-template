@@ -22,6 +22,8 @@
     <br><br>
     <a href="{{ url_for('images.new') }}">Share Photos</a>
     <br><br>
+    <a href="{{ url_for('images.index') }}">Feed</a>
+    <br><br>
     <form method="POST" action="{{ url_for('sessions.login_destroy') }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <div class="form-group">
